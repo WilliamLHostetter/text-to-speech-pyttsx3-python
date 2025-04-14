@@ -1,5 +1,9 @@
 # Text-To-Speech (TTS) with Python using the pyttsx3 library
 
+<p align="center" width="100%">
+  <img style="display: block; margin: auto;" src="./images/text-to-speech.svg"/>
+</p>
+
 Python implementation of converting Text-To-Speech (TTS) offline with the *pyttsx3* library.  
 
 #### Features:
