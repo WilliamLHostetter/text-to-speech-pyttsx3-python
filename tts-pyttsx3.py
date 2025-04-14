@@ -8,8 +8,8 @@ speech that can be saved as an .mp3 audio file.
 import pyttsx3
 import tkinter as tk
 from tkinter import scrolledtext, ttk, messagebox
-import tkinter.font as tkFont
 import ctypes # to get screen size
+
 
 engine = pyttsx3.init()
 # Adding an argument gets a reference to an engine instance that will use the given driver.
@@ -18,13 +18,18 @@ engine = pyttsx3.init()
 # engine = pyttsx3.init(driverName='espeak') # eSpeak on Linux and every other platform 
 voices = engine.getProperty('voices')
 voice_name_list = [voice.name for voice in voices]
+voice_menu_default = "Select a voice"
 
-
-def process_tts(text, speech_rate, volume_level, voice_name_selection, savefile):
+def process_tts(text: str, speech_rate: int, volume_level: float, voice_name_selection: str, savefile: bool) -> None:
     global engine
-    # Set voice
-    voice_index = voice_name_list.index(voice_name_selection)
+    if voice_name_selection == voice_menu_default:
+        error_msg = "Need to select a voice"
+        messagebox.showerror("Input Error", error_msg)
+        return None
+
     try:
+        # Set voice
+        voice_index = voice_name_list.index(voice_name_selection)
         voice_index = int(voice_index)
         assert voice_index >= 0
     except Exception :
@@ -52,7 +57,9 @@ def process_tts(text, speech_rate, volume_level, voice_name_selection, savefile)
     engine.runAndWait()
 
 
-def submit_text(scrolledText, entry1_var, entry2_var, combo, savefile_var):
+def submit_text(scrolledText: tk.scrolledtext.ScrolledText, entry1_var: tk.StringVar, entry2_var: tk.StringVar, combo, savefile_var: tk.BooleanVar) -> None:
+    print("type(scrolledText) =", type(scrolledText))
+    print("type(combo) =", type(combo))
     input_text = scrolledText.get('1.0', 'end-1c')
     if not input_text:
         error_msg = "Enter a text to convert to speech"
@@ -82,7 +89,7 @@ def submit_text(scrolledText, entry1_var, entry2_var, combo, savefile_var):
     process_tts(input_text, speech_rate, volume_level, voice_name_selection, savefile)
 
 
-def main():
+def main() -> None:
     user32 = ctypes.windll.user32
     (screensize_width, screensize_height) = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
     print("(screensize_width, screensize_height)", (screensize_width, screensize_height))
@@ -102,7 +109,6 @@ def main():
     # declaring string variable for storing 3 inputs
     entry1_var = tk.StringVar()
     entry2_var = tk.StringVar()
-    voice_var = tk.StringVar()
     savefile_var = tk.BooleanVar()
     savefile_var.set(False)
 
@@ -120,7 +126,7 @@ def main():
     
     # Voices Dropdown Menu
     combo = ttk.Combobox(state="readonly", values=voice_name_list)
-    combo.set("Select a voice")
+    combo.set(voice_menu_default)
     combo.grid(row=6, column=0, pady=15)
     max_width_in_num_char = max(len(item) for item in voice_name_list)
     combo.configure(width=max_width_in_num_char)
